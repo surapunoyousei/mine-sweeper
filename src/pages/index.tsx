@@ -12,9 +12,11 @@ const directions = [
   [-1, -1],
 ];
 
+/*
 const getRandomArbitrary = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min) + min);
 };
+*/
 
 const Home = () => {
   // const [samplePos, setSamplePos] = useState(0);
@@ -38,10 +40,10 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  const maxBombCount = 10;
+  // const maxBombCount = 10;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
-  const [bombMap, setBombMap] = useState([
+  const [bombMap /*setBombMap*/] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -101,7 +103,7 @@ const Home = () => {
               className={styles.cell}
               key={`${x} + ${y}`}
               data-opening-state={value.isOpend ? true : false}
-              onClick={(e) => {
+              onClick={() => {
                 clonedUserInputs[y][x] = 4;
                 setUserInputs(clonedUserInputs);
               }}
