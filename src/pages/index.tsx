@@ -25,6 +25,7 @@ const Home = () => {
   // 1 -> 左クリック
   // 2 -> はてな
   // 3 -> 旗
+  // 4 -> クリック済み
   const [userInputs, setUserInputs] = useState([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -69,7 +70,7 @@ const Home = () => {
   const borad: {
     value: number;
     isOpend: boolean;
-    isBomb: number;
+    isBomb: boolean;
     nearByBombs: number;
   }[][] = [];
   userInputs.map((aArray, y) => {
@@ -77,8 +78,8 @@ const Home = () => {
     aArray.map((value, x) => {
       borad[y].push({
         value,
-        isOpend: value === 1,
-        isBomb: bombMap[y][x],
+        isOpend: value === 4,
+        isBomb: bombMap[y][x] === 1,
         nearByBombs: getNearByBombs(x, y),
       });
     });
@@ -99,9 +100,9 @@ const Home = () => {
             <div
               className={styles.cell}
               key={`${x} + ${y}`}
-              data-state={userInputs[y][x]}
+              data-opening-state={value.isOpend ? true : false}
               onClick={(e) => {
-                clonedUserInputs[y][x] = 1;
+                clonedUserInputs[y][x] = 4;
                 setUserInputs(clonedUserInputs);
               }}
             >
@@ -110,14 +111,18 @@ const Home = () => {
                 data-state={userInputs[y][x]}
                 style={{
                   backgroundPosition: `${
-                    borad[y][x].isBomb === 1
-                      ? 10 * -30
-                      : borad[y][x].nearByBombs !== 0
-                        ? (borad[y][x].nearByBombs - 1) * -30
-                        : 30
+                    value.isOpend
+                      ? borad[y][x].isBomb
+                        ? 10 * -30
+                        : borad[y][x].nearByBombs !== 0
+                          ? (borad[y][x].nearByBombs - 1) * -30
+                          : 30
+                      : 30
                   }px 0px`,
                 }}
-              />
+              >
+                {/* Mozilla */}
+              </div>
             </div>
           )),
         )}
