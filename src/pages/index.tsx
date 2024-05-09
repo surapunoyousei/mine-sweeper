@@ -12,12 +12,6 @@ const directions = [
   [-1, -1],
 ];
 
-/*
-const getRandomArbitrary = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min) + min);
-};
-*/
-
 const Home = () => {
   // const [samplePos, setSamplePos] = useState(0);
   // () => setSamplePos( p => (p + 1) % 14 )
@@ -29,8 +23,8 @@ const Home = () => {
   // 3 -> 旗
   // 4 -> クリック済み
   const [userInputs, setUserInputs] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 4, 0, 0, 0, 0, 0, 0, 0],
+    [4, 4, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -40,21 +34,22 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
 
-  // const maxBombCount = 10;
+  const maxBombCount = 10;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
   const [bombMap /*setBombMap*/] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 1, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 1, 0, 0, 0, 0, 1, 0, 0],
+    [0, 0, 1, 1, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 1, 0, 0, 0],
   ]);
   const clonedUserInputs = structuredClone(userInputs);
+  const clonedBombMap = structuredClone(bombMap);
 
   const getNearByBombs = (x: number, y: number) => {
     let count = 0;
@@ -87,12 +82,21 @@ const Home = () => {
     });
   });
 
-  /*
-  const isUnInitializedBoard = () => {
-    return borad.every((row) => row.every((aObj) => aObj.value === 0));
-  };
-  */
+  function digSomeCells(x: number, y: number) {
+    if (x < 0 || x >= 9 || y < 0 || y >= 9 || clonedUserInputs[y][x] !== 0 || borad[y][x].isOpend) {
+      return;
+    }
 
+    clonedUserInputs[y][x] = 4;
+
+    if (borad[y][x].nearByBombs === 0) {
+      directions.forEach((direction) => {
+        digSomeCells(x + direction[0], y + direction[1]);
+      });
+    }
+
+    setUserInputs(clonedUserInputs);
+  }
   return (
     <div className={styles.container}>
       <div id={styles.header} />
@@ -104,7 +108,7 @@ const Home = () => {
               key={`${x} + ${y}`}
               data-opening-state={value.isOpend ? true : false}
               onClick={() => {
-                clonedUserInputs[y][x] = 4;
+                digSomeCells(x, y);
                 setUserInputs(clonedUserInputs);
               }}
             >
