@@ -6,44 +6,78 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
+  background-color: #181a1b;
+}
+
+#contents {
+  display: flex;
+  border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
+    var(--border-color-left-and-bottom) var(--border-color-right-and-top);
+  border-style: outset;
+  border-width: 4px;
+}
+
+#main {
+  display: flex;
+  flex-direction: row;
 }
 
 #header {
-  width: 270px;
-  height: 60px;
-  background: gray;
-  border: solid black 1px;
+  width: 280px;
+  height: 70px;
+  background: var(--header-background-color);
+  border-color: var(--border-color-left-and-bottom) var(--border-color-right-and-top)
+    var(--border-color-right-and-top) var(--border-color-left-and-bottom);
+  border-style: inset;
+  border-width: 5px;
 }
 
 #board {
   display: flex;
   flex-flow: row wrap;
-  width: 270px;
-  height: 270px;
+  width: 280px;
+  height: 280px;
+  border-color: var(--border-color-left-and-bottom) var(--border-color-right-and-top)
+    var(--border-color-right-and-top) var(--border-color-left-and-bottom);
+  border-style: inset;
+  border-width: 5px;
 }
 
 .cell {
   width: 30px;
   height: 30px;
-  background: #7a7a7a;
-  background-position: 0 0;
-  border: solid 1px gray;
+  background: var(--opened-cell-color);
+  background-position: 0;
+  border: solid 1px var(--opened-cell-border-color);
 }
 
-.cell[data-opening-state="false"] {
-  background: #bcbcbc;
-  border: 3px outset #7a7a7a;
+.cell[data-opening-state='false'] {
+  background: var(--unopened-cell-color);
+  border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
+    var(--border-color-left-and-bottom) var(--border-color-right-and-top);
+  border-style: outset;
+  border-width: 4px;
 }
-
 
 .displayIcons {
   width: 30px;
   height: 30px;
-  background: url("~/src/assets/images/icons.png") no-repeat;
+  background: url('~/src/assets/images/icons.png') no-repeat;
   background-position: 300px 0;
   scale: 0.75;
 }
 
-.cell[data-opening-state="false"] .displayIcons {
+.cell[data-opening-state='false'] .displayIcons {
   margin: -3px;
+}
+
+.hSidePanels {
+  width: 10px;
+  background-color: var(--opened-cell-color);
+}
+
+.vSidePanels {
+  width: 280px;
+  height: 10px;
+  background-color: var(--opened-cell-color);
 }

@@ -1,0 +1,9 @@
+
+:root {
+  --border-color-right-and-top: #fff;
+  --border-color-left-and-bottom: #808080;
+  --unopened-cell-color: #c6c6c6;
+  --opened-cell-color: #c6c6c6;
+  --opened-cell-border-color: #808080;
+  --header-background-color: #c0c0c0;
+}

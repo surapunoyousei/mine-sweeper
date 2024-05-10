@@ -13,10 +13,6 @@ const directions = [
 ];
 
 const Home = () => {
-  // const [samplePos, setSamplePos] = useState(0);
-  // () => setSamplePos( p => (p + 1) % 14 )
-  // `${-30 * samplePos}px 0px`
-
   // 0 -> 未クリック
   // 1 -> 左クリック
   // 2 -> はてな
@@ -82,56 +78,63 @@ const Home = () => {
     });
   });
 
-  function digSomeCells(x: number, y: number) {
+  function digcell(x: number, y: number) {
     if (x < 0 || x >= 9 || y < 0 || y >= 9 || clonedUserInputs[y][x] !== 0 || borad[y][x].isOpend) {
       return;
     }
-
     clonedUserInputs[y][x] = 4;
-
     if (borad[y][x].nearByBombs === 0) {
       directions.forEach((direction) => {
-        digSomeCells(x + direction[0], y + direction[1]);
+        digcell(x + direction[0], y + direction[1]);
       });
     }
-
     setUserInputs(clonedUserInputs);
   }
+
   return (
     <div className={styles.container}>
-      <div id={styles.header} />
-      <div id={styles.board}>
-        {borad.map((row, y) =>
-          row.map((value, x) => (
-            <div
-              className={styles.cell}
-              key={`${x} + ${y}`}
-              data-opening-state={value.isOpend ? true : false}
-              onClick={() => {
-                digSomeCells(x, y);
-                setUserInputs(clonedUserInputs);
-              }}
-            >
-              <div
-                className={styles.displayIcons}
-                data-state={userInputs[y][x]}
-                style={{
-                  backgroundPosition: `${
-                    value.isOpend
-                      ? borad[y][x].isBomb
-                        ? 10 * -30
-                        : borad[y][x].nearByBombs !== 0
-                          ? (borad[y][x].nearByBombs - 1) * -30
-                          : 30
-                      : 30
-                  }px 0px`,
-                }}
-              >
-                {/* Mozilla */}
-              </div>
+      <div id={styles.contents}>
+        <div id={styles.leftSidePanel} className={styles.hSidePanels} />
+        <div id={styles.center}>
+          <div id={styles.topSidePanel} className={styles.vSidePanels} />
+          <div id={styles.header} />
+          <div id={styles.topSidePanel} className={styles.vSidePanels} />
+          <div id={styles.main}>
+            <div id={styles.board}>
+              {borad.map((row, y) =>
+                row.map((value, x) => (
+                  <div
+                    className={styles.cell}
+                    key={`${x} + ${y}`}
+                    data-opening-state={value.isOpend ? true : false}
+                    onClick={() => {
+                      digcell(x, y);
+                      setUserInputs(clonedUserInputs);
+                    }}
+                  >
+                    <div
+                      className={styles.displayIcons}
+                      data-state={userInputs[y][x]}
+                      style={{
+                        backgroundPosition: `${
+                          value.isOpend
+                            ? borad[y][x].isBomb
+                              ? 10 * -30
+                              : borad[y][x].nearByBombs !== 0
+                                ? (borad[y][x].nearByBombs - 1) * -30
+                                : 30
+                            : 30
+                        }px 0px`,
+                      }}
+                    />
+                  </div>
+                )),
+              )}
             </div>
-          )),
-        )}
+          </div>
+          <div id={styles.bottomSidePanel} className={styles.vSidePanels} />
+        </div>
+        <div id={styles.leftSidePanel} className={styles.hSidePanels} />
       </div>
     </div>
   );
