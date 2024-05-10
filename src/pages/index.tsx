@@ -97,7 +97,11 @@ const Home = () => {
 
   const setBomb = async (x: number, y: number) => {
     const excludeNum = y * borad[0].length + x;
-    const randomArray = generateRandomNumArray(borad.length * borad[0].length - 1, maxBombCount, excludeNum);
+    const randomArray = generateRandomNumArray(
+      borad.length * borad[0].length - 1,
+      maxBombCount,
+      excludeNum,
+    );
     const oneArrayNums = borad[0].length;
     randomArray.map((value) => {
       clonedBombMap[Math.floor(value / oneArrayNums)][value % oneArrayNums] = 1;
@@ -137,7 +141,7 @@ const Home = () => {
                     data-opening-state={value.isOpend ? true : false}
                     onClick={() => {
                       if (isFirstInput) {
-                        setBomb(x,y).then(() => {
+                        setBomb(x, y).then(() => {
                           digcell(x, y);
                         });
                       } else {
