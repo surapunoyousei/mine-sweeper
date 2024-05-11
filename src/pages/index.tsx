@@ -19,10 +19,9 @@ const generateRandomNum = (min: number, max: number) => {
 
 const generateRandomNumArray = (maxNumber: number, length: number, excludeNum: number) => {
   const result: number[] = [];
-
-  for (let i = 0; i <= length; i++) {
+  for (let i = 0; i < length; i++) {
     const num = generateRandomNum(0, maxNumber);
-    if (result.includes(num) && num !== excludeNum) {
+    if (result.includes(num) || num === excludeNum) {
       i--;
       continue;
     }
@@ -48,6 +47,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
+  const clonedUserInputs = structuredClone(userInputs);
 
   const maxBombCount = 10;
   // 0 -> 爆弾なし
@@ -63,7 +63,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
   ]);
-  const clonedUserInputs = structuredClone(userInputs);
+
   const clonedBombMap = structuredClone(bombMap);
 
   const getNearByBombs = (x: number, y: number) => {
@@ -96,15 +96,16 @@ const Home = () => {
   });
 
   const setBomb = async (x: number, y: number) => {
-    const excludeNum = y * borad[0].length + x;
     const randomArray = generateRandomNumArray(
       borad.length * borad[0].length - 1,
       maxBombCount,
-      excludeNum,
+      x + y * borad[0].length,
     );
     const oneArrayNums = borad[0].length;
     randomArray.map((value) => {
-      clonedBombMap[Math.floor(value / oneArrayNums)][value % oneArrayNums] = 1;
+      const y = Math.floor(value / oneArrayNums);
+      const x = value % oneArrayNums;
+      clonedBombMap[y][x] = 1;
     });
     setBombMap(clonedBombMap);
   };
