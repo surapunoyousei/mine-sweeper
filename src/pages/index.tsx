@@ -130,7 +130,41 @@ const Home = () => {
         <div id={styles.leftSidePanel} className={styles.hSidePanels} />
         <div id={styles.center}>
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
-          <div id={styles.header} />
+          <div id={styles.header}>
+            <div id={styles.bcounter} className={styles.counters}>
+              {(() => {
+                const result = [];
+                for (let i = 0; i < 3; i++) {
+                  result.push(
+                    <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                      <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
+                      <div
+                        className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
+                      />
+                    </div>,
+                  );
+                }
+                return result;
+              })()}
+            </div>
+            <div id={styles.fbutton} />
+            <div id={styles.tcounter} className={styles.counters}>
+              {(() => {
+                const result = [];
+                for (let i = 0; i < 3; i++) {
+                  result.push(
+                    <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                      <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
+                      <div
+                        className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
+                      />
+                    </div>,
+                  );
+                }
+                return result;
+              })()}
+            </div>
+          </div>
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
           <div id={styles.main}>
             <div id={styles.board}>

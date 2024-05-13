@@ -23,6 +23,8 @@
 }
 
 #header {
+  display: flex;
+  flex-direction: row;
   width: 280px;
   height: 70px;
   background: var(--header-background-color);
@@ -30,6 +32,44 @@
     var(--border-color-right-and-top) var(--border-color-left-and-bottom);
   border-style: inset;
   border-width: 5px;
+}
+
+.counters {
+  display: flex;
+  flex-direction: row;
+  width: 76.875px;
+  height: 46.875px;
+  margin-top: 5.625px;
+  background-color: #000;
+}
+
+#bcounter {
+  margin-left: 5.625px;
+}
+
+#fbutton {
+  width: 45.75px;
+  height: 45.75px;
+  margin: auto;
+  background: var(--unopened-cell-color);
+  border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
+    var(--border-color-left-and-bottom) var(--border-color-right-and-top);
+  border-style: outset;
+  border-width: 4px;
+}
+
+#tcounter {
+  margin-right: 5.625px;
+}
+
+.halfNumberCounts {
+  width: 20px;
+  height: 20px;
+  background-color: red;
+}
+
+.topHalfNumberCounts {
+  margin-top: 4px;
 }
 
 #board {
