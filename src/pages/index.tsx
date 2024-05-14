@@ -11,6 +11,118 @@ const directions = [
   [-1, 0],
   [-1, -1],
 ];
+/*
+const clasicStyleNumberDefines = {
+  0: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: true,
+    topHalfNumberCounts_top: true,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: true,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  1: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: false,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: false,
+    bottomHalfNumberCounts_bottom: false,
+  },
+  2: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: false,
+    bottomHalfNumberCounts_right: true,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  3: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  4: {
+    topHalfNumberCounts_left: false,
+    topHalfNumberCounts_right: true,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: false,
+  },
+
+  5: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: true,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: false,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  6: {
+    topHalfNumberCounts_left: false,
+    topHalfNumberCounts_right: true,
+    topHalfNumberCounts_top: true,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: false,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  7: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: false,
+  },
+
+  8: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: false,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: true,
+  },
+
+  9: {
+    topHalfNumberCounts_left: true,
+    topHalfNumberCounts_right: false,
+    topHalfNumberCounts_top: false,
+    topHalfNumberCounts_bottom: true,
+    bottomHalfNumberCounts_left: true,
+    bottomHalfNumberCounts_right: true,
+    bottomHalfNumberCounts_top: true,
+    bottomHalfNumberCounts_bottom: true,
+  },
+};
+*/
 
 const generateRandomNum = (min: number, max: number) => {
   const result = Math.floor(Math.random() * (max + 1 - min) + min);
@@ -31,6 +143,8 @@ const generateRandomNumArray = (maxNumber: number, length: number, excludeNum: n
 };
 
 const Home = () => {
+  const [gameOver, setGameOver] = useState(false);
+
   // 0 -> 未クリック
   // 1 -> 左クリック
   // 2 -> はてな
@@ -84,6 +198,7 @@ const Home = () => {
     isOpend: boolean;
     isBomb: boolean;
     nearByBombs: () => number;
+    hasUserInput: () => boolean;
   }[][] = userInputs.map((aArray, y) => {
     return aArray.map((value, x) => {
       return {
@@ -91,9 +206,46 @@ const Home = () => {
         isOpend: value === 4,
         isBomb: clonedBombMap[y][x] === 1,
         nearByBombs: () => getNearByBombs(x, y),
+        hasUserInput: () => value !== 0,
       };
     });
   });
+
+  const handleCellClick = (
+    x: number,
+    y: number,
+    value: {
+      value: number;
+      isOpend: boolean;
+      isBomb: boolean;
+      nearByBombs: () => number;
+    },
+  ) => {
+    if (gameOver) {
+      return;
+    }
+
+    if (isFirstInput) {
+      setBomb(x, y).then(() => {
+        digcell(x, y);
+      });
+    } else {
+      if (value.isBomb) {
+        alert('Game Over');
+        setGameOver(true);
+      }
+      digcell(x, y);
+    }
+  };
+
+  // Add an onContextMenu handler for flagging bombs
+  const handleRightClick = (ev: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
+    ev.preventDefault();
+    if (gameOver) {
+      return;
+    }
+    putFlag(x, y);
+  };
 
   const setBomb = async (x: number, y: number) => {
     const randomArray = generateRandomNumArray(
@@ -122,7 +274,22 @@ const Home = () => {
       });
     }
     setUserInputs(clonedUserInputs);
+
+    // Check for win condition
+    if (clonedUserInputs.flat().filter((val) => val !== 4).length === maxBombCount) {
+      alert('You win!');
+      setGameOver(true);
+    }
   }
+
+  const putFlag = (x: number, y: number) => {
+    if (clonedUserInputs[y][x] === 3) {
+      clonedUserInputs[y][x] = 0;
+    } else {
+      clonedUserInputs[y][x] = 3;
+    }
+    setUserInputs(clonedUserInputs);
+  };
 
   return (
     <div className={styles.container}>
@@ -153,7 +320,7 @@ const Home = () => {
                 const result = [];
                 for (let i = 0; i < 3; i++) {
                   result.push(
-                    <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                    <div key={i} className={styles.numberCounts} id={styles.first_bcounter_number}>
                       <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
                       <div
                         className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
@@ -174,18 +341,9 @@ const Home = () => {
                     className={styles.cell}
                     key={`${x} + ${y}`}
                     data-opening-state={value.isOpend ? true : false}
-                    onClick={() => {
-                      if (isFirstInput) {
-                        setBomb(x, y).then(() => {
-                          digcell(x, y);
-                        });
-                      } else {
-                        if (value.isBomb) {
-                          alert('爆弾があります');
-                        }
-                        digcell(x, y);
-                      }
-                    }}
+                    data-user-input={userInputs[y][x]}
+                    onClick={() => handleCellClick(x, y, value)}
+                    onContextMenu={(ev) => handleRightClick(ev, x, y)}
                   >
                     <div
                       className={styles.displayIcons}

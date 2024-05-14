@@ -52,6 +52,9 @@
   height: 45.75px;
   margin: auto;
   background: var(--unopened-cell-color);
+  background-image: url("http://localhost:3000/_next/static/media/icons.4e9f0110.png");
+  background-position: -977px;
+  background-size: 1450%;
   border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
     var(--border-color-left-and-bottom) var(--border-color-right-and-top);
   border-style: outset;
@@ -62,10 +65,20 @@
   margin-right: 5.625px;
 }
 
+.numberCounts {
+  background: inherit;
+}
+
 .halfNumberCounts {
   width: 20px;
   height: 20px;
-  background-color: red;
+  margin-left: 4.5px;
+  border-spacing: 100px;
+  border-collapse: separate;
+  background-color: none;
+  border-color: #600000;
+  border-style: outset;
+  border-width: 4.5px;
 }
 
 .topHalfNumberCounts {
@@ -107,8 +120,12 @@
   scale: 0.75;
 }
 
-.cell[data-opening-state='false'] .displayIcons {
+.cell[data-opening-state='false'] > .displayIcons {
   margin: -3px;
+}
+
+.cell[data-user-input="3"]  > .displayIcons{
+  background-position: -270px 0 !important;
 }
 
 .hSidePanels {
