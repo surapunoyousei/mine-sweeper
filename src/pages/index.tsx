@@ -143,8 +143,6 @@ const generateRandomNumArray = (maxNumber: number, length: number, excludeNum: n
 };
 
 const Home = () => {
-  const [gameOver, setGameOver] = useState(false);
-
   // 0 -> 未クリック
   // 1 -> 左クリック
   // 2 -> はてな
@@ -211,6 +209,10 @@ const Home = () => {
     });
   });
 
+  const isGameOver = userInputs
+    .flat()
+    .some((value, index) => value === 4 && clonedBombMap.flat()[index] === 1);
+
   const handleCellClick = (
     x: number,
     y: number,
@@ -221,7 +223,7 @@ const Home = () => {
       nearByBombs: () => number;
     },
   ) => {
-    if (gameOver) {
+    if (isGameOver) {
       return;
     }
 
@@ -232,7 +234,6 @@ const Home = () => {
     } else {
       if (value.isBomb) {
         alert('Game Over');
-        setGameOver(true);
       }
       digcell(x, y);
     }
@@ -241,7 +242,7 @@ const Home = () => {
   // Add an onContextMenu handler for flagging bombs
   const handleRightClick = (ev: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
     ev.preventDefault();
-    if (gameOver) {
+    if (isGameOver) {
       return;
     }
     putFlag(x, y);
@@ -278,7 +279,6 @@ const Home = () => {
     // Check for win condition
     if (clonedUserInputs.flat().filter((val) => val !== 4).length === maxBombCount) {
       alert('You win!');
-      setGameOver(true);
     }
   }
 
@@ -320,7 +320,11 @@ const Home = () => {
                 const result = [];
                 for (let i = 0; i < 3; i++) {
                   result.push(
-                    <div key={i} className={styles.numberCounts} id={styles.first_bcounter_number}>
+                    <div
+                      data-key={i}
+                      className={styles.numberCounts}
+                      id={styles.first_bcounter_number}
+                    >
                       <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
                       <div
                         className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
