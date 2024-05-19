@@ -11,118 +11,6 @@ const directions = [
   [-1, 0],
   [-1, -1],
 ];
-/*
-const clasicStyleNumberDefines = {
-  0: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: true,
-    topHalfNumberCounts_top: true,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: true,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  1: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: false,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: false,
-    bottomHalfNumberCounts_bottom: false,
-  },
-  2: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: false,
-    bottomHalfNumberCounts_right: true,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  3: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  4: {
-    topHalfNumberCounts_left: false,
-    topHalfNumberCounts_right: true,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: false,
-  },
-
-  5: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: true,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: false,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  6: {
-    topHalfNumberCounts_left: false,
-    topHalfNumberCounts_right: true,
-    topHalfNumberCounts_top: true,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: false,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  7: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: false,
-  },
-
-  8: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: false,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: true,
-  },
-
-  9: {
-    topHalfNumberCounts_left: true,
-    topHalfNumberCounts_right: false,
-    topHalfNumberCounts_top: false,
-    topHalfNumberCounts_bottom: true,
-    bottomHalfNumberCounts_left: true,
-    bottomHalfNumberCounts_right: true,
-    bottomHalfNumberCounts_top: true,
-    bottomHalfNumberCounts_bottom: true,
-  },
-};
-*/
 
 const generateRandomNum = (min: number, max: number) => {
   const result = Math.floor(Math.random() * (max + 1 - min) + min);
@@ -213,10 +101,7 @@ const Home = () => {
     .flat()
     .some((value, index) => value === 4 && clonedBombMap.flat()[index] === 1);
 
-  const handleCellClick = (
-    x: number,
-    y: number
-  ) => {
+  const handleCellClick = (x: number, y: number) => {
     if (isGameOver) {
       return;
     }
@@ -255,8 +140,15 @@ const Home = () => {
   };
   const isFirstInput = bombMap.every((row) => row.every((value) => value === 0));
 
-  function digcell(x: number, y: number){
-    if (x < 0 || x >= 9 || y < 0 || y >= 9 || clonedUserInputs[y][x] !== 0 || borad[y][x].isOpend) {
+  function digcell(x: number, y: number, recursive: boolean = false) {
+    if (
+      x < 0 ||
+      x >= 9 ||
+      y < 0 ||
+      y >= 9 ||
+      (recursive && clonedUserInputs[y][x] !== 3 && clonedUserInputs[y][x] !== 0) ||
+      borad[y][x].isOpend
+    ) {
       return;
     }
     clonedUserInputs[y][x] = 4;
@@ -270,7 +162,7 @@ const Home = () => {
 
     if (borad[y][x].nearByBombs() === 0) {
       directions.forEach((direction) => {
-        digcell(x + direction[0], y + direction[1]);
+        digcell(x + direction[0], y + direction[1], true);
       });
     }
     setUserInputs(clonedUserInputs);
@@ -282,8 +174,8 @@ const Home = () => {
   }
 
   function digAllBombCells() {
-    clonedUserInputs.forEach((row, y) => {
-      row.forEach((_, x) => {
+    clonedUserInputs.map((aArray, y) => {
+      aArray.map((_, x) => {
         if (borad[y][x].isBomb) {
           clonedUserInputs[y][x] = 4;
         }
@@ -309,42 +201,12 @@ const Home = () => {
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
           <div id={styles.header}>
             <div id={styles.bcounter} className={styles.counters}>
-              {(() => {
-                const result = [];
-                for (let i = 0; i < 3; i++) {
-                  result.push(
-                    <div className={styles.numberCounts} id={styles.first_bcounter_number}>
-                      <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
-                      <div
-                        className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
-                      />
-                    </div>,
-                  );
-                }
-                return result;
-              })()}
+              <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                {maxBombCount - clonedUserInputs.flat().filter((value) => value === 3).length}
+              </div>
             </div>
             <div id={styles.fbutton} />
-            <div id={styles.tcounter} className={styles.counters}>
-              {(() => {
-                const result = [];
-                for (let i = 0; i < 3; i++) {
-                  result.push(
-                    <div
-                      data-key={i}
-                      className={styles.numberCounts}
-                      id={styles.first_bcounter_number}
-                    >
-                      <div className={`${styles.halfNumberCounts} ${styles.topHalfNumberCounts}`} />
-                      <div
-                        className={`${styles.halfNumberCounts} ${styles.bottomHalfNumberCounts}`}
-                      />
-                    </div>,
-                  );
-                }
-                return result;
-              })()}
-            </div>
+            <div id={styles.tcounter} className={styles.counters} />
           </div>
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
           <div id={styles.main}>
@@ -355,8 +217,9 @@ const Home = () => {
                     className={styles.cell}
                     key={`${x} + ${y}`}
                     data-opening-state={value.isOpend ? true : false}
+                    data-is-bomb={value.isBomb ? true : false}
                     data-user-input={userInputs[y][x]}
-                    onClick={() => handleCellClick(x, y, value)}
+                    onClick={() => handleCellClick(x, y)}
                     onContextMenu={(ev) => handleRightClick(ev, x, y)}
                   >
                     <div

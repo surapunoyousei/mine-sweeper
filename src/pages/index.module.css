@@ -36,7 +36,6 @@
 
 .counters {
   display: flex;
-  flex-direction: row;
   width: 76.875px;
   height: 46.875px;
   margin-top: 5.625px;
@@ -52,9 +51,9 @@
   height: 45.75px;
   margin: auto;
   background: var(--unopened-cell-color);
-  background-image: url("http://localhost:3000/_next/static/media/icons.4e9f0110.png");
-  background-position: -977px;
-  background-size: 1450%;
+  background-image: url('~/src/assets/images/icons.png');
+  background-position: -880px;
+  background-size: 475px;
   border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
     var(--border-color-left-and-bottom) var(--border-color-right-and-top);
   border-style: outset;
@@ -66,23 +65,12 @@
 }
 
 .numberCounts {
+  flex: 1;
+  margin-top: 5%;
+  font-size: 30px;
+  color: red;
+  text-align: center;
   background: inherit;
-}
-
-.halfNumberCounts {
-  width: 20px;
-  height: 20px;
-  margin-left: 4.5px;
-  border-spacing: 100px;
-  border-collapse: separate;
-  background-color: none;
-  border-color: #600000;
-  border-style: outset;
-  border-width: 4.5px;
-}
-
-.topHalfNumberCounts {
-  margin-top: 4px;
 }
 
 #board {
@@ -102,6 +90,11 @@
   background: var(--opened-cell-color);
   background-position: 0;
   border: solid 1px var(--opened-cell-border-color);
+}
+
+.cell[data-is-bomb="true"] {
+  background: var(--bomb-cell-color);
+  background-position: 0;
 }
 
 .cell[data-opening-state='false'] {
