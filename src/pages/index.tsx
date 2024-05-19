@@ -36,33 +36,18 @@ const Home = () => {
   // 2 -> はてな
   // 3 -> 旗
   // 4 -> クリック済み
-  const [userInputs, setUserInputs] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  const [userInputs, setUserInputs] = useState(
+    Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)),
+  );
+
   const clonedUserInputs = structuredClone(userInputs);
 
   const maxBombCount = 10;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
-  const [bombMap, setBombMap] = useState([
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0],
-  ]);
+  const [bombMap, setBombMap] = useState(
+    Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)),
+  );
 
   const clonedBombMap = structuredClone(bombMap);
 
