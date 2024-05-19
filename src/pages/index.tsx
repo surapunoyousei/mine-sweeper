@@ -215,13 +215,7 @@ const Home = () => {
 
   const handleCellClick = (
     x: number,
-    y: number,
-    value: {
-      value: number;
-      isOpend: boolean;
-      isBomb: boolean;
-      nearByBombs: () => number;
-    },
+    y: number
   ) => {
     if (isGameOver) {
       return;
@@ -232,9 +226,6 @@ const Home = () => {
         digcell(x, y);
       });
     } else {
-      if (value.isBomb) {
-        alert('Game Over');
-      }
       digcell(x, y);
     }
   };
@@ -242,7 +233,7 @@ const Home = () => {
   // Add an onContextMenu handler for flagging bombs
   const handleRightClick = (ev: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
     ev.preventDefault();
-    if (isGameOver) {
+    if (isGameOver || borad[y][x].isOpend) {
       return;
     }
     putFlag(x, y);
@@ -264,11 +255,19 @@ const Home = () => {
   };
   const isFirstInput = bombMap.every((row) => row.every((value) => value === 0));
 
-  function digcell(x: number, y: number) {
+  function digcell(x: number, y: number){
     if (x < 0 || x >= 9 || y < 0 || y >= 9 || clonedUserInputs[y][x] !== 0 || borad[y][x].isOpend) {
       return;
     }
     clonedUserInputs[y][x] = 4;
+
+    if (borad[y][x].isBomb) {
+      alert('Game Over');
+      digAllBombCells();
+      setUserInputs(clonedUserInputs);
+      return;
+    }
+
     if (borad[y][x].nearByBombs() === 0) {
       directions.forEach((direction) => {
         digcell(x + direction[0], y + direction[1]);
@@ -280,6 +279,17 @@ const Home = () => {
     if (clonedUserInputs.flat().filter((val) => val !== 4).length === maxBombCount) {
       alert('You win!');
     }
+  }
+
+  function digAllBombCells() {
+    clonedUserInputs.forEach((row, y) => {
+      row.forEach((_, x) => {
+        if (borad[y][x].isBomb) {
+          clonedUserInputs[y][x] = 4;
+        }
+      });
+    });
+    setUserInputs(clonedUserInputs);
   }
 
   const putFlag = (x: number, y: number) => {
