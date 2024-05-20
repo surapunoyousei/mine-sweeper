@@ -53,7 +53,7 @@
   background: var(--unopened-cell-color);
   background-image: url('~/src/assets/images/icons.png');
   background-position: -880px;
-  background-size: 475px;
+  background-size: 500px;
   border-color: var(--border-color-right-and-top) var(--border-color-left-and-bottom)
     var(--border-color-left-and-bottom) var(--border-color-right-and-top);
   border-style: outset;
@@ -64,9 +64,17 @@
   margin-right: 5.625px;
 }
 
+@font-face {
+  font-family: "E1234";
+  src:
+    url("~/src/assets/fonts/E1234.ttf") format("truetype");
+}
+
 .numberCounts {
   flex: 1;
-  margin-top: 5%;
+  margin-top: 10px;
+  /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
+  font-family: "E1234";
   font-size: 30px;
   color: red;
   text-align: center;
@@ -92,7 +100,7 @@
   border: solid 1px var(--opened-cell-border-color);
 }
 
-.cell[data-is-bomb="true"] {
+.cell[data-isgameovercausebomb="true"] {
   background: var(--bomb-cell-color);
   background-position: 0;
 }

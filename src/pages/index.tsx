@@ -45,6 +45,7 @@ const Home = () => {
   const maxBombCount = 10;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
+  // 2 -> ゲームオーバーの原因の爆弾
   const [bombMap, setBombMap] = useState(
     Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)),
   );
@@ -59,7 +60,7 @@ const Home = () => {
       if (nx < 0 || nx >= 9 || ny < 0 || ny >= 9) {
         return;
       }
-      count += clonedBombMap[ny][nx];
+      count += clonedBombMap[ny][nx] >= 1 ? 1 : 0;
     });
     return count;
   };
@@ -68,6 +69,7 @@ const Home = () => {
     value: number;
     isOpend: boolean;
     isBomb: boolean;
+    isGameOverCauseBomb: boolean;
     nearByBombs: () => number;
     hasUserInput: () => boolean;
   }[][] = userInputs.map((aArray, y) => {
@@ -75,7 +77,8 @@ const Home = () => {
       return {
         value,
         isOpend: value === 4,
-        isBomb: clonedBombMap[y][x] === 1,
+        isBomb: clonedBombMap[y][x] === 1 || clonedBombMap[y][x] === 2,
+        isGameOverCauseBomb: value === 4 && clonedBombMap[y][x] === 2,
         nearByBombs: () => getNearByBombs(x, y),
         hasUserInput: () => value !== 0,
       };
@@ -84,7 +87,10 @@ const Home = () => {
 
   const isGameOver = userInputs
     .flat()
-    .some((value, index) => value === 4 && clonedBombMap.flat()[index] === 1);
+    .some((value, index) => value === 4 && clonedBombMap.flat()[index] >= 1);
+
+  const isUserWin =
+    userInputs.flat().filter((value) => value === 4).length === 9 * 9 - maxBombCount;
 
   const handleCellClick = (x: number, y: number) => {
     if (isGameOver) {
@@ -140,7 +146,10 @@ const Home = () => {
 
     if (borad[y][x].isBomb) {
       alert('Game Over');
+      clonedBombMap[y][x] = 2;
+      clonedUserInputs[y][x] = 4;
       digAllBombCells();
+      setBombMap(clonedBombMap);
       setUserInputs(clonedUserInputs);
       return;
     }
@@ -151,11 +160,6 @@ const Home = () => {
       });
     }
     setUserInputs(clonedUserInputs);
-
-    // Check for win condition
-    if (clonedUserInputs.flat().filter((val) => val !== 4).length === maxBombCount) {
-      alert('You win!');
-    }
   }
 
   function digAllBombCells() {
@@ -178,6 +182,11 @@ const Home = () => {
     setUserInputs(clonedUserInputs);
   };
 
+  const resetGame = () => {
+    setUserInputs(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
+    setBombMap(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
+  };
+
   return (
     <div className={styles.container}>
       <div id={styles.contents}>
@@ -190,7 +199,11 @@ const Home = () => {
                 {maxBombCount - clonedUserInputs.flat().filter((value) => value === 3).length}
               </div>
             </div>
-            <div id={styles.fbutton} />
+            <div
+              id={styles.fbutton}
+              onClick={() => resetGame()}
+              style={{ backgroundPosition: `${isGameOver ? 38 : isUserWin ? 73 : 108}px` }}
+            />
             <div id={styles.tcounter} className={styles.counters} />
           </div>
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
@@ -202,7 +215,7 @@ const Home = () => {
                     className={styles.cell}
                     key={`${x} + ${y}`}
                     data-opening-state={value.isOpend ? true : false}
-                    data-is-bomb={value.isBomb ? true : false}
+                    data-isGameOverCauseBomb={value.isGameOverCauseBomb ? true : false}
                     data-user-input={userInputs[y][x]}
                     onClick={() => handleCellClick(x, y)}
                     onContextMenu={(ev) => handleRightClick(ev, x, y)}
