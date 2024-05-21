@@ -65,16 +65,15 @@
 }
 
 @font-face {
-  font-family: "E1234";
-  src:
-    url("~/src/assets/fonts/E1234.ttf") format("truetype");
+  font-family: 'E1234';
+  src: url('~/src/assets/fonts/E1234.ttf') format('truetype');
 }
 
 .numberCounts {
   flex: 1;
   margin-top: 10px;
   /* stylelint-disable-next-line font-family-no-missing-generic-family-keyword */
-  font-family: "E1234";
+  font-family: 'E1234';
   font-size: 30px;
   color: red;
   text-align: center;
@@ -100,7 +99,7 @@
   border: solid 1px var(--opened-cell-border-color);
 }
 
-.cell[data-isgameovercausebomb="true"] {
+.cell[data-isgameovercausebomb='true'] {
   background: var(--bomb-cell-color);
   background-position: 0;
 }
@@ -125,8 +124,12 @@
   margin: -3px;
 }
 
-.cell[data-user-input="3"]  > .displayIcons{
+.cell[data-user-input='3'] > .displayIcons {
   background-position: -270px 0 !important;
+}
+
+.cell[data-user-input='3'][data-isusrmisreadflagput="true"] {
+  background-color: #e69090;
 }
 
 .hSidePanels {

@@ -42,7 +42,7 @@ const Home = () => {
 
   const clonedUserInputs = structuredClone(userInputs);
 
-  const maxBombCount = 10;
+  const maxBombCount = 2;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
   // 2 -> ゲームオーバーの原因の爆弾
@@ -65,11 +65,13 @@ const Home = () => {
     return count;
   };
 
+  // セルの情報保存用。参照はなるべくこちら側を使う
   const borad: {
     value: number;
     isOpend: boolean;
     isBomb: boolean;
     isGameOverCauseBomb: boolean;
+    isUsrMisreadFlagPut: boolean;
     nearByBombs: () => number;
     hasUserInput: () => boolean;
   }[][] = userInputs.map((aArray, y) => {
@@ -77,23 +79,31 @@ const Home = () => {
       return {
         value,
         isOpend: value === 4,
-        isBomb: clonedBombMap[y][x] === 1 || clonedBombMap[y][x] === 2,
+        isBomb: clonedBombMap[y][x] >= 1,
         isGameOverCauseBomb: value === 4 && clonedBombMap[y][x] === 2,
+        isUsrMisreadFlagPut: clonedBombMap[y][x] < 1 && value === 3,
         nearByBombs: () => getNearByBombs(x, y),
         hasUserInput: () => value !== 0,
       };
     });
   });
 
-  const isGameOver = userInputs
-    .flat()
-    .some((value, index) => value === 4 && clonedBombMap.flat()[index] >= 1);
+  /* ゲームの進行状態確認 */
+  const isGameOver = () => {
+    return userInputs
+      .flat()
+      .some((value, index) => value === 4 && clonedBombMap.flat()[index] >= 1);
+  };
 
-  const isUserWin =
-    userInputs.flat().filter((value) => value === 4).length === 9 * 9 - maxBombCount;
+  const isUserWon = () => {
+    return clonedUserInputs.flat().filter((value) => value === 4).length === 9 * 9 - maxBombCount;
+  };
 
+  const shouldBeDisableInput = isGameOver() || isUserWon();
+
+  /*セルのクリック処理。左右クリック両方とも*/
   const handleCellClick = (x: number, y: number) => {
-    if (isGameOver) {
+    if (shouldBeDisableInput) {
       return;
     }
 
@@ -109,12 +119,13 @@ const Home = () => {
   // Add an onContextMenu handler for flagging bombs
   const handleRightClick = (ev: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
     ev.preventDefault();
-    if (isGameOver || borad[y][x].isOpend) {
+    if (shouldBeDisableInput || borad[y][x].isOpend) {
       return;
     }
     putFlag(x, y);
   };
 
+  /* ゲームの進行のためのコード */
   const setBomb = async (x: number, y: number) => {
     const randomArray = generateRandomNumArray(
       borad.length * borad[0].length - 1,
@@ -145,7 +156,6 @@ const Home = () => {
     clonedUserInputs[y][x] = 4;
 
     if (borad[y][x].isBomb) {
-      alert('Game Over');
       clonedBombMap[y][x] = 2;
       clonedUserInputs[y][x] = 4;
       digAllBombCells();
@@ -182,6 +192,7 @@ const Home = () => {
     setUserInputs(clonedUserInputs);
   };
 
+  // ゲームの初期化
   const resetGame = () => {
     setUserInputs(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
     setBombMap(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
@@ -202,7 +213,7 @@ const Home = () => {
             <div
               id={styles.fbutton}
               onClick={() => resetGame()}
-              style={{ backgroundPosition: `${isGameOver ? 38 : isUserWin ? 73 : 108}px` }}
+              style={{ backgroundPosition: `${isGameOver() ? 38 : isUserWon() ? 73 : 108}px` }}
             />
             <div id={styles.tcounter} className={styles.counters} />
           </div>
@@ -214,9 +225,12 @@ const Home = () => {
                   <div
                     className={styles.cell}
                     key={`${x} + ${y}`}
-                    data-opening-state={value.isOpend ? true : false}
-                    data-isGameOverCauseBomb={value.isGameOverCauseBomb ? true : false}
-                    data-user-input={userInputs[y][x]}
+                    data-opening-state={value.isOpend}
+                    data-isGameOverCauseBomb={value.isGameOverCauseBomb}
+                    data-isUsrMisreadFlagPut={
+                      shouldBeDisableInput ? value.isUsrMisreadFlagPut : false
+                    }
+                    data-user-input={isUserWon() && value.isBomb ? 3 : userInputs[y][x]}
                     onClick={() => handleCellClick(x, y)}
                     onContextMenu={(ev) => handleRightClick(ev, x, y)}
                   >
