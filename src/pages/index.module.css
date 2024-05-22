@@ -25,7 +25,7 @@
 #header {
   display: flex;
   flex-direction: row;
-  width: 280px;
+  width: inherit;
   height: 70px;
   background: var(--header-background-color);
   border-color: var(--border-color-left-and-bottom) var(--border-color-right-and-top)
@@ -83,8 +83,6 @@
 #board {
   display: flex;
   flex-flow: row wrap;
-  width: 280px;
-  height: 280px;
   border-color: var(--border-color-left-and-bottom) var(--border-color-right-and-top)
     var(--border-color-right-and-top) var(--border-color-left-and-bottom);
   border-style: inset;
@@ -138,7 +136,6 @@
 }
 
 .vSidePanels {
-  width: 280px;
   height: 10px;
   background-color: var(--opened-cell-color);
 }

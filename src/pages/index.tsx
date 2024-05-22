@@ -12,6 +12,24 @@ const directions = [
   [-1, -1],
 ];
 
+const defaultConfigs = {
+  0: {
+    width: 9,
+    height: 9,
+    bombs: 10,
+  },
+  1: {
+    width: 16,
+    height: 16,
+    bombs: 40,
+  },
+  2: {
+    width: 30,
+    height: 16,
+    bombs: 99,
+  },
+};
+
 const generateRandomNum = (min: number, max: number) => {
   const result = Math.floor(Math.random() * (max + 1 - min) + min);
   return result;
@@ -31,25 +49,54 @@ const generateRandomNumArray = (maxNumber: number, length: number, excludeNum: n
 };
 
 const Home = () => {
+  // ゲームの設定保存
+  const [mineSweeperConfig, setMineSweeperConfig] = useState({
+    level: -1,
+    width: 9,
+    height: 9,
+    bombs: 10,
+  });
+  const clonedMineSweeperConfig = structuredClone(mineSweeperConfig);
+
+  // ゲームの設定呼び出し用
+  const config = {
+    level: clonedMineSweeperConfig.level,
+    get width() {
+      return clonedMineSweeperConfig['level'] === -1
+        ? clonedMineSweeperConfig['width']
+        : defaultConfigs[clonedMineSweeperConfig['level']]['width'];
+    },
+    get height() {
+      return mineSweeperConfig['level'] === -1
+        ? clonedMineSweeperConfig['height']
+        : defaultConfigs[clonedMineSweeperConfig['level']]['height'];
+    },
+    get bombs() {
+      return clonedMineSweeperConfig['level'] === -1
+        ? clonedMineSweeperConfig['bombs']
+        : defaultConfigs[clonedMineSweeperConfig['level']]['bombs'];
+    },
+  };
+
+  const getBoard = () => {
+    return Array.from({ length: config.height }, () =>
+      Array.from({ length: config.width }, () => 0),
+    );
+  };
+
   // 0 -> 未クリック
   // 1 -> 左クリック
   // 2 -> はてな
   // 3 -> 旗
   // 4 -> クリック済み
-  const [userInputs, setUserInputs] = useState(
-    Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)),
-  );
+  const [userInputs, setUserInputs] = useState(getBoard());
 
-  const clonedUserInputs = structuredClone(userInputs);
-
-  const maxBombCount = 2;
   // 0 -> 爆弾なし
   // 1 -> 爆弾あり
   // 2 -> ゲームオーバーの原因の爆弾
-  const [bombMap, setBombMap] = useState(
-    Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)),
-  );
+  const [bombMap, setBombMap] = useState(getBoard());
 
+  const clonedUserInputs = structuredClone(userInputs);
   const clonedBombMap = structuredClone(bombMap);
 
   const getNearByBombs = (x: number, y: number) => {
@@ -57,7 +104,7 @@ const Home = () => {
     directions.map((direction) => {
       const nx = x + direction[0];
       const ny = y + direction[1];
-      if (nx < 0 || nx >= 9 || ny < 0 || ny >= 9) {
+      if (nx < 0 || nx >= config.width || ny < 0 || ny >= config.height) {
         return;
       }
       count += clonedBombMap[ny][nx] >= 1 ? 1 : 0;
@@ -66,15 +113,7 @@ const Home = () => {
   };
 
   // セルの情報保存用。参照はなるべくこちら側を使う
-  const borad: {
-    value: number;
-    isOpend: boolean;
-    isBomb: boolean;
-    isGameOverCauseBomb: boolean;
-    isUsrMisreadFlagPut: boolean;
-    nearByBombs: () => number;
-    hasUserInput: () => boolean;
-  }[][] = userInputs.map((aArray, y) => {
+  const borad = userInputs.map((aArray, y) => {
     return aArray.map((value, x) => {
       return {
         value,
@@ -96,7 +135,10 @@ const Home = () => {
   };
 
   const isUserWon = () => {
-    return clonedUserInputs.flat().filter((value) => value === 4).length === 9 * 9 - maxBombCount;
+    return (
+      clonedUserInputs.flat().filter((value) => value === 4).length ===
+      config.width * config.height - config.bombs
+    );
   };
 
   const shouldBeDisableInput = isGameOver() || isUserWon();
@@ -129,7 +171,7 @@ const Home = () => {
   const setBomb = async (x: number, y: number) => {
     const randomArray = generateRandomNumArray(
       borad.length * borad[0].length - 1,
-      maxBombCount,
+      config.bombs,
       x + y * borad[0].length,
     );
     const oneArrayNums = borad[0].length;
@@ -145,9 +187,9 @@ const Home = () => {
   function digcell(x: number, y: number, recursive: boolean = false) {
     if (
       x < 0 ||
-      x >= 9 ||
+      x >= config.width ||
       y < 0 ||
-      y >= 9 ||
+      y >= config.height ||
       (recursive && clonedUserInputs[y][x] !== 3 && clonedUserInputs[y][x] !== 0) ||
       borad[y][x].isOpend
     ) {
@@ -194,20 +236,63 @@ const Home = () => {
 
   // ゲームの初期化
   const resetGame = () => {
-    setUserInputs(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
-    setBombMap(Array.from({ length: 9 }, () => Array.from({ length: 9 }, () => 0)));
+    setUserInputs(getBoard());
+    setBombMap(getBoard());
   };
 
   return (
     <div className={styles.container}>
+      <div>
+        <input
+          disabled={false}
+          value={config.width}
+          type="number"
+          min={8}
+          max={40}
+          onChange={(e) => {
+            clonedMineSweeperConfig['width'] = Number(e.target.value);
+            setMineSweeperConfig(clonedMineSweeperConfig);
+            resetGame();
+          }}
+        />
+        <input
+          disabled={false}
+          value={config.height}
+          type="number"
+          min={8}
+          max={40}
+          onChange={(e) => {
+            clonedMineSweeperConfig['height'] = Number(e.target.value);
+            setMineSweeperConfig(clonedMineSweeperConfig);
+            resetGame();
+          }}
+        />
+        <input
+          disabled={false}
+          value={config.bombs}
+          type="number"
+          min={1}
+          max={config.height * config.width - 1}
+          onChange={(e) => {
+            clonedMineSweeperConfig['bombs'] = Number(e.target.value);
+            setMineSweeperConfig(clonedMineSweeperConfig);
+            resetGame();
+          }}
+        />
+      </div>
       <div id={styles.contents}>
         <div id={styles.leftSidePanel} className={styles.hSidePanels} />
-        <div id={styles.center}>
+        <div
+          id={styles.center}
+          style={{
+            width: `${30 * config.width + 10}px`,
+          }}
+        >
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
           <div id={styles.header}>
             <div id={styles.bcounter} className={styles.counters}>
               <div className={styles.numberCounts} id={styles.first_bcounter_number}>
-                {maxBombCount - clonedUserInputs.flat().filter((value) => value === 3).length}
+                {config.bombs - clonedUserInputs.flat().filter((value) => value === 3).length}
               </div>
             </div>
             <div
@@ -219,7 +304,13 @@ const Home = () => {
           </div>
           <div id={styles.topSidePanel} className={styles.vSidePanels} />
           <div id={styles.main}>
-            <div id={styles.board}>
+            <div
+              id={styles.board}
+              style={{
+                height: `${30 * config.height + 10}px`,
+                width: `${30 * config.width + 10}px`,
+              }}
+            >
               {borad.map((row, y) =>
                 row.map((value, x) => (
                   <div
