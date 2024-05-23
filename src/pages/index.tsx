@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './index.module.css';
 
 const directions = [
@@ -58,6 +58,46 @@ const generateRandomNumArray = (maxNumber: number, length: number, excludeNum: n
 };
 
 const Home = () => {
+  // Timer の実装
+  // タイマーの実装
+  const [seconds, setSeconds] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerFunctions = {
+    resetTimer: () => {
+      setSeconds(0);
+      setIsRunning(false);
+    },
+
+    startTimer: () => {
+      if (seconds < 999) {
+        setIsRunning(true);
+      }
+    },
+
+    stopTimer: () => {
+      setIsRunning(false);
+    },
+  };
+
+  useEffect(() => {
+    if (isRunning && seconds < 999) {
+      timerRef.current = setInterval(() => {
+        setSeconds((prevSeconds) => prevSeconds + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isRunning, seconds]);
+
   // ゲームの設定保存
   const [mineSweeperConfig, setMineSweeperConfig] = useState({
     level: -1,
@@ -110,7 +150,6 @@ const Home = () => {
 
   const clonedUserInputs = structuredClone(userInputs);
   const clonedBombMap = structuredClone(bombMap);
-  console.log(clonedUserInputs, clonedBombMap);
 
   const getNearByBombs = (x: number, y: number) => {
     let count = 0;
@@ -166,6 +205,7 @@ const Home = () => {
       setBomb(x, y).then(() => {
         digcell(x, y);
       });
+      timerFunctions.startTimer();
     } else {
       digcell(x, y);
     }
@@ -215,6 +255,7 @@ const Home = () => {
       digAllBombCells();
       setBombMap(clonedBombMap);
       setUserInputs(clonedUserInputs);
+      timerFunctions.stopTimer();
       return;
     }
 
@@ -250,6 +291,7 @@ const Home = () => {
   const resetGame = () => {
     setUserInputs(getBoard());
     setBombMap(getBoard());
+    timerFunctions.resetTimer();
   };
 
   return (
@@ -348,7 +390,11 @@ const Home = () => {
                 onClick={() => resetGame()}
                 style={{ backgroundPosition: `${isGameOver() ? 38 : isUserWon() ? 73 : 108}px` }}
               />
-              <div id={styles.tcounter} className={styles.counters} />
+              <div id={styles.tcounter} className={styles.counters}>
+                <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                  {seconds < 999 ? seconds : 999}
+                </div>
+              </div>
             </div>
             <div id={styles.topSidePanel} className={styles.vSidePanels} />
             <div id={styles.main}>
