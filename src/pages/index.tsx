@@ -32,7 +32,12 @@ const defaultConfigs: {
   },
 };
 
-const items = [
+const items: [
+  { level: number; item: string },
+  { level: number; item: string },
+  { level: number; item: string },
+  { level: number; item: string },
+] = [
   { level: -1, item: 'カスタム' },
   { level: 0, item: '初級' },
   { level: 1, item: '中級' },
@@ -257,6 +262,10 @@ const Home = () => {
       setUserInputs(clonedUserInputs);
       timerFunctions.stopTimer();
       return;
+    }
+
+    if (isUserWon()) {
+      timerFunctions.stopTimer();
     }
 
     if (borad[y][x].nearByBombs() === 0) {
