@@ -338,7 +338,9 @@ const Home = () => {
             <div id={styles.header}>
               <div id={styles.bcounter} className={styles.counters}>
                 <div className={styles.numberCounts} id={styles.first_bcounter_number}>
-                  {config.bombs - clonedUserInputs.flat().filter((value) => value === 3).length}
+                  {isUserWon()
+                    ? 0
+                    : config.bombs - clonedUserInputs.flat().filter((value) => value === 3).length}
                 </div>
               </div>
               <div
