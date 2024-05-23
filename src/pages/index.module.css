@@ -129,12 +129,6 @@
   border: solid 1px var(--opened-cell-border-color);
 }
 
-.cell:hover:active {
-  background: var(--opened-cell-color) !important;
-  background-position: 0 !important;
-  border: solid 1px var(--opened-cell-border-color) !important;
-}
-
 .cell[data-isgameovercausebomb='true'] {
   background: var(--bomb-cell-color);
   background-position: 0;
