@@ -12,7 +12,9 @@ const directions = [
   [-1, -1],
 ];
 
-const defaultConfigs = {
+const defaultConfigs: {
+  [key: number]: { width: number; height: number; bombs: number };
+} = {
   0: {
     width: 9,
     height: 9,
@@ -29,6 +31,13 @@ const defaultConfigs = {
     bombs: 99,
   },
 };
+
+const items = [
+  { level: -1, item: 'カスタム' },
+  { level: 0, item: '初級' },
+  { level: 1, item: '中級' },
+  { level: 2, item: '上級' },
+];
 
 const generateRandomNum = (min: number, max: number) => {
   const result = Math.floor(Math.random() * (max + 1 - min) + min);
@@ -67,7 +76,7 @@ const Home = () => {
         : defaultConfigs[clonedMineSweeperConfig['level']]['width'];
     },
     get height() {
-      return mineSweeperConfig['level'] === -1
+      return clonedMineSweeperConfig['level'] === -1
         ? clonedMineSweeperConfig['height']
         : defaultConfigs[clonedMineSweeperConfig['level']]['height'];
     },
@@ -75,6 +84,9 @@ const Home = () => {
       return clonedMineSweeperConfig['level'] === -1
         ? clonedMineSweeperConfig['bombs']
         : defaultConfigs[clonedMineSweeperConfig['level']]['bombs'];
+    },
+    get isCustom() {
+      return clonedMineSweeperConfig['level'] === -1;
     },
   };
 
@@ -98,6 +110,7 @@ const Home = () => {
 
   const clonedUserInputs = structuredClone(userInputs);
   const clonedBombMap = structuredClone(bombMap);
+  console.log(clonedUserInputs, clonedBombMap);
 
   const getNearByBombs = (x: number, y: number) => {
     let count = 0;
@@ -145,7 +158,7 @@ const Home = () => {
 
   /*セルのクリック処理。左右クリック両方とも*/
   const handleCellClick = (x: number, y: number) => {
-    if (shouldBeDisableInput) {
+    if (shouldBeDisableInput || borad[y][x].value === 3) {
       return;
     }
 
@@ -158,7 +171,6 @@ const Home = () => {
     }
   };
 
-  // Add an onContextMenu handler for flagging bombs
   const handleRightClick = (ev: React.MouseEvent<HTMLDivElement>, x: number, y: number) => {
     ev.preventDefault();
     if (shouldBeDisableInput || borad[y][x].isOpend) {
@@ -242,112 +254,147 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <div>
-        <input
-          disabled={false}
-          value={config.width}
-          type="number"
-          min={8}
-          max={40}
-          onChange={(e) => {
-            clonedMineSweeperConfig['width'] = Number(e.target.value);
-            setMineSweeperConfig(clonedMineSweeperConfig);
-            resetGame();
-          }}
-        />
-        <input
-          disabled={false}
-          value={config.height}
-          type="number"
-          min={8}
-          max={40}
-          onChange={(e) => {
-            clonedMineSweeperConfig['height'] = Number(e.target.value);
-            setMineSweeperConfig(clonedMineSweeperConfig);
-            resetGame();
-          }}
-        />
-        <input
-          disabled={false}
-          value={config.bombs}
-          type="number"
-          min={1}
-          max={config.height * config.width - 1}
-          onChange={(e) => {
-            clonedMineSweeperConfig['bombs'] = Number(e.target.value);
-            setMineSweeperConfig(clonedMineSweeperConfig);
-            resetGame();
-          }}
-        />
-      </div>
-      <div id={styles.contents}>
-        <div id={styles.leftSidePanel} className={styles.hSidePanels} />
-        <div
-          id={styles.center}
-          style={{
-            width: `${30 * config.width + 10}px`,
-          }}
-        >
-          <div id={styles.topSidePanel} className={styles.vSidePanels} />
-          <div id={styles.header}>
-            <div id={styles.bcounter} className={styles.counters}>
-              <div className={styles.numberCounts} id={styles.first_bcounter_number}>
-                {config.bombs - clonedUserInputs.flat().filter((value) => value === 3).length}
+      <div id={styles.objects}>
+        <div id={styles.config}>
+          <div id={styles.customConfig}>
+            <div>
+              <label className={styles.labelConfigs}>横セル：</label>
+              <input
+                className={styles.inputConfigs}
+                disabled={!config.isCustom}
+                value={config.width}
+                type="number"
+                min={8}
+                max={40}
+                onChange={(e) => {
+                  clonedMineSweeperConfig['width'] = Number(e.target.value);
+                  setMineSweeperConfig(clonedMineSweeperConfig);
+                  resetGame();
+                }}
+              />
+            </div>
+            <div>
+              <label className={styles.labelConfigs}>縦セル：</label>
+              <input
+                className={styles.inputConfigs}
+                disabled={!config.isCustom}
+                value={config.height}
+                type="number"
+                min={8}
+                max={40}
+                onChange={(e) => {
+                  clonedMineSweeperConfig['height'] = Number(e.target.value);
+                  setMineSweeperConfig(clonedMineSweeperConfig);
+                  resetGame();
+                }}
+              />
+            </div>
+            <div>
+              <label className={styles.labelConfigs}>爆弾数：</label>
+              <input
+                className={styles.inputConfigs}
+                disabled={!config.isCustom}
+                value={config.bombs}
+                type="number"
+                min={1}
+                max={config.height * config.width - 1}
+                onChange={(e) => {
+                  clonedMineSweeperConfig['bombs'] = Number(e.target.value);
+                  setMineSweeperConfig(clonedMineSweeperConfig);
+                  resetGame();
+                }}
+              />
+            </div>
+          </div>
+          <div id={styles.customConfig}>
+            {items.map((item) => {
+              return (
+                <label key={item.level}>
+                  <input
+                    type="radio"
+                    value={item.item}
+                    onChange={() => {
+                      clonedMineSweeperConfig['level'] = item.level;
+                      setMineSweeperConfig(clonedMineSweeperConfig);
+                      resetGame();
+                    }}
+                    checked={config.level === item.level}
+                  />
+                  {item.item}
+                </label>
+              );
+            })}
+          </div>
+        </div>
+        <div id={styles.contents}>
+          <div id={styles.leftSidePanel} className={styles.hSidePanels} />
+          <div
+            id={styles.center}
+            style={{
+              width: `${30 * config.width + 10}px`,
+            }}
+          >
+            <div id={styles.topSidePanel} className={styles.vSidePanels} />
+            <div id={styles.header}>
+              <div id={styles.bcounter} className={styles.counters}>
+                <div className={styles.numberCounts} id={styles.first_bcounter_number}>
+                  {config.bombs - clonedUserInputs.flat().filter((value) => value === 3).length}
+                </div>
+              </div>
+              <div
+                id={styles.fbutton}
+                onClick={() => resetGame()}
+                style={{ backgroundPosition: `${isGameOver() ? 38 : isUserWon() ? 73 : 108}px` }}
+              />
+              <div id={styles.tcounter} className={styles.counters} />
+            </div>
+            <div id={styles.topSidePanel} className={styles.vSidePanels} />
+            <div id={styles.main}>
+              <div
+                id={styles.board}
+                style={{
+                  height: `${30 * config.height + 10}px`,
+                  width: `${30 * config.width + 10}px`,
+                }}
+              >
+                {borad.map((row, y) =>
+                  row.map((value, x) => (
+                    <div
+                      className={styles.cell}
+                      key={`${x} + ${y}`}
+                      data-opening-state={value.isOpend}
+                      data-isGameOverCauseBomb={value.isGameOverCauseBomb}
+                      data-isUsrMisreadFlagPut={
+                        shouldBeDisableInput ? value.isUsrMisreadFlagPut : false
+                      }
+                      data-user-input={isUserWon() && value.isBomb ? 3 : userInputs[y][x]}
+                      onClick={() => handleCellClick(x, y)}
+                      onContextMenu={(ev) => handleRightClick(ev, x, y)}
+                    >
+                      <div
+                        className={styles.displayIcons}
+                        data-state={userInputs[y][x]}
+                        style={{
+                          backgroundPosition: `${
+                            value.isOpend
+                              ? borad[y][x].isBomb
+                                ? 10 * -30
+                                : borad[y][x].nearByBombs() !== 0
+                                  ? (borad[y][x].nearByBombs() - 1) * -30
+                                  : 30
+                              : 30
+                          }px 0px`,
+                        }}
+                      />
+                    </div>
+                  )),
+                )}
               </div>
             </div>
-            <div
-              id={styles.fbutton}
-              onClick={() => resetGame()}
-              style={{ backgroundPosition: `${isGameOver() ? 38 : isUserWon() ? 73 : 108}px` }}
-            />
-            <div id={styles.tcounter} className={styles.counters} />
+            <div id={styles.bottomSidePanel} className={styles.vSidePanels} />
           </div>
-          <div id={styles.topSidePanel} className={styles.vSidePanels} />
-          <div id={styles.main}>
-            <div
-              id={styles.board}
-              style={{
-                height: `${30 * config.height + 10}px`,
-                width: `${30 * config.width + 10}px`,
-              }}
-            >
-              {borad.map((row, y) =>
-                row.map((value, x) => (
-                  <div
-                    className={styles.cell}
-                    key={`${x} + ${y}`}
-                    data-opening-state={value.isOpend}
-                    data-isGameOverCauseBomb={value.isGameOverCauseBomb}
-                    data-isUsrMisreadFlagPut={
-                      shouldBeDisableInput ? value.isUsrMisreadFlagPut : false
-                    }
-                    data-user-input={isUserWon() && value.isBomb ? 3 : userInputs[y][x]}
-                    onClick={() => handleCellClick(x, y)}
-                    onContextMenu={(ev) => handleRightClick(ev, x, y)}
-                  >
-                    <div
-                      className={styles.displayIcons}
-                      data-state={userInputs[y][x]}
-                      style={{
-                        backgroundPosition: `${
-                          value.isOpend
-                            ? borad[y][x].isBomb
-                              ? 10 * -30
-                              : borad[y][x].nearByBombs() !== 0
-                                ? (borad[y][x].nearByBombs() - 1) * -30
-                                : 30
-                            : 30
-                        }px 0px`,
-                      }}
-                    />
-                  </div>
-                )),
-              )}
-            </div>
-          </div>
-          <div id={styles.bottomSidePanel} className={styles.vSidePanels} />
+          <div id={styles.leftSidePanel} className={styles.hSidePanels} />
         </div>
-        <div id={styles.leftSidePanel} className={styles.hSidePanels} />
       </div>
     </div>
   );

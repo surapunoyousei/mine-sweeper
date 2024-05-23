@@ -6,7 +6,29 @@
   height: 100vh;
   min-height: 100vh;
   padding: 0 0.5rem;
-  background-color: #181a1b;
+  background-color: #333;
+}
+
+#objects {
+  display: flex;
+}
+
+#config {
+  position: absolute;
+  top: 1em;
+  left: 1em;
+  display: flex;
+  flex-direction: column;
+  color: var(--input-configs-color);
+}
+
+.inputConfigs {
+  padding: 8px;
+  margin: 2px 4px;
+  color: var(--input-configs-color);
+  background-color: inherit;
+  border-color: #888;
+  border-radius: 4px;
 }
 
 #contents {
@@ -126,7 +148,7 @@
   background-position: -270px 0 !important;
 }
 
-.cell[data-user-input='3'][data-isusrmisreadflagput="true"] {
+.cell[data-user-input='3'][data-isusrmisreadflagput='true'] {
   background-color: #e69090;
 }
 
