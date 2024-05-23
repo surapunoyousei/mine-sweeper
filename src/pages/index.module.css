@@ -19,7 +19,11 @@
   left: 1em;
   display: flex;
   flex-direction: column;
+  padding: 15px !important;
   color: var(--input-configs-color);
+  background: #1e1e1e;
+  border: 1px solid transparent;
+  border-radius: 4px;
 }
 
 .inputConfigs {
@@ -82,6 +86,11 @@
   border-width: 4px;
 }
 
+#fbutton:hover:active {
+  border-color: inherit !important;
+  border-style: outset !important;
+}
+
 #tcounter {
   margin-right: 5.625px;
 }
@@ -117,6 +126,12 @@
   background: var(--opened-cell-color);
   background-position: 0;
   border: solid 1px var(--opened-cell-border-color);
+}
+
+.cell:hover:active {
+  background: var(--opened-cell-color) !important;
+  background-position: 0 !important;
+  border: solid 1px var(--opened-cell-border-color) !important;
 }
 
 .cell[data-isgameovercausebomb='true'] {
