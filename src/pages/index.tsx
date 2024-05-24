@@ -113,7 +113,13 @@ const Home = () => {
   const clonedMineSweeperConfig = structuredClone(mineSweeperConfig);
 
   // ゲームの設定呼び出し用
-  const config = {
+  const config: {
+    level: number;
+    width: number;
+    height: number;
+    bombs: number;
+    isCustom: boolean;
+  } = {
     level: clonedMineSweeperConfig.level,
     get width() {
       return clonedMineSweeperConfig['level'] === -1
@@ -170,7 +176,15 @@ const Home = () => {
   };
 
   // セルの情報保存用。参照はなるべくこちら側を使う
-  const borad = userInputs.map((aArray, y) => {
+  const borad: {
+    value: number;
+    isOpend: boolean;
+    isBomb: boolean;
+    isGameOverCauseBomb: boolean;
+    isUsrMisreadFlagPut: boolean;
+    nearByBombs: () => number;
+    hasUserInput: () => boolean;
+  }[][] = userInputs.map((aArray, y) => {
     return aArray.map((value, x) => {
       return {
         value,
